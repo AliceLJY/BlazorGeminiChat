@@ -30,7 +30,10 @@ jobs:
         run: dotnet publish --configuration Release --no-build -o publish
         
       - name: Change base-tag in index.html
-        run: sed -i 's/<base href="\/" \/>/<base href="\/BlazorGeminiChat\/" \/>/g' publish/wwwroot/index.html
+        run: sed -i 's/<base href=\"\/\" \/>/<base href=\"\/BlazorGeminiChat\/\" \/>/g' publish/wwwroot/index.html
+        
+      - name: Fix Bootstrap JS path
+        run: sed -i 's/bootstrap\.bootstrap\.bundle\.min\.js/bootstrap\.bundle\.min\.js/g' publish/wwwroot/index.html
         
       - name: Add .nojekyll file
         run: touch publish/wwwroot/.nojekyll
@@ -40,23 +43,6 @@ jobs:
         
       - name: List files
         run: ls -la publish/wwwroot
-        
-      # 复制到docs目录
-      - name: Copy to docs directory
-        run: |
-          rm -rf docs
-          mkdir -p docs
-          cp -r publish/wwwroot/* docs/
-          cp publish/wwwroot/.nojekyll docs/
-          
-      # 提交docs目录内容
-      - name: Commit docs
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add docs
-          git commit -m "Update docs directory for GitHub Pages" || echo "No changes to commit"
-          git push
           
       # 部署到gh-pages分支
       - name: Deploy to GitHub Pages
