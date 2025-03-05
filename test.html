@@ -3,14 +3,17 @@
 <head>
   <title>GitHub Pages Test</title>
   <meta charset="utf-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
 </head>
 <body>
-  <h1>GitHub Pages Test Page</h1>
-  <p>如果你能看到这个页面，说明GitHub Pages配置正常。</p>
-  <p>当前时间: <span id="time"></span></p>
+  <h1>GitHub Pages 测试页面</h1>
+  <p>如果你能看到这个页面，说明GitHub Pages配置正确。</p>
+  <p>测试时间: <span id="current-time"></span></p>
   
   <script>
-    document.getElementById("time").innerHTML = new Date().toString();
+    document.getElementById('current-time').textContent = new Date().toLocaleString();
   </script>
 </body>
 </html>
