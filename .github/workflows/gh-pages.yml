@@ -1,0 +1,42 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+          
+      - name: Restore dependencies
+        run: dotnet restore
+        
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+        
+      - name: Publish
+        run: dotnet publish --configuration Release --no-build -o publish
+        
+      - name: Change base-tag in index.html
+        run: sed -i 's/<base href="\/" \/>/<base href="\/BlazorGeminiChat\/" \/>/g' publish/wwwroot/index.html
+        
+      - name: Add .nojekyll file
+        run: touch publish/wwwroot/.nojekyll
+        
+      - name: Add 404.html
+        run: cp publish/wwwroot/index.html publish/wwwroot/404.html
+        
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: publish/wwwroot
+          clean: true
