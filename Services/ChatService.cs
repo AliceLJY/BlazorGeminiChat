@@ -7,14 +7,14 @@ namespace BlazorGeminiChat.Services
     public class ChatService
     {
         private readonly HttpClient _httpClient;
-        private string _currentSessionId;
+        private string _currentSessionId = string.Empty;
 
         public ChatService(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
 
-        public async Task<ChatResponse> SendMessageAsync(string message, string sessionId = null)
+        public async Task<ChatResponse> SendMessageAsync(string message, string? sessionId = null)
         {
             try
             {
@@ -33,7 +33,7 @@ namespace BlazorGeminiChat.Services
                     _currentSessionId = result.SessionId;
                 }
                 
-                return result;
+                return result ?? new ChatResponse();
             }
             catch (Exception ex)
             {
@@ -65,7 +65,7 @@ namespace BlazorGeminiChat.Services
                 {
                     _currentSessionId = response.SessionId;
                 }
-                return response;
+                return response ?? new SessionMessages { SessionId = sessionId };
             }
             catch (Exception ex)
             {
@@ -80,19 +80,19 @@ namespace BlazorGeminiChat.Services
     public class ChatRequest
     {
         [JsonPropertyName("message")]
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
 
         [JsonPropertyName("session_id")]
-        public string SessionId { get; set; }
+        public string SessionId { get; set; } = string.Empty;
     }
 
     public class ChatResponse
     {
         [JsonPropertyName("sessionId")]
-        public string SessionId { get; set; }
+        public string SessionId { get; set; } = string.Empty;
 
         [JsonPropertyName("response")]
-        public string Response { get; set; }
+        public string Response { get; set; } = string.Empty;
 
         [JsonPropertyName("messages")]
         public List<ChatMessage> Messages { get; set; } = new List<ChatMessage>();
@@ -101,7 +101,7 @@ namespace BlazorGeminiChat.Services
     public class SessionMessages
     {
         [JsonPropertyName("sessionId")]
-        public string SessionId { get; set; }
+        public string SessionId { get; set; } = string.Empty;
 
         [JsonPropertyName("messages")]
         public List<ChatMessage> Messages { get; set; } = new List<ChatMessage>();
@@ -110,22 +110,22 @@ namespace BlazorGeminiChat.Services
     public class ChatMessage
     {
         [JsonPropertyName("role")]
-        public string Role { get; set; }
+        public string Role { get; set; } = string.Empty;
 
         [JsonPropertyName("content")]
-        public string Content { get; set; }
+        public string Content { get; set; } = string.Empty;
 
         [JsonPropertyName("timestamp")]
-        public string Timestamp { get; set; }
+        public string Timestamp { get; set; } = string.Empty;
     }
 
     public class SessionInfo
     {
         [JsonPropertyName("session_id")]
-        public string SessionId { get; set; }
+        public string SessionId { get; set; } = string.Empty;
 
         [JsonPropertyName("created_at")]
-        public string CreatedAt { get; set; }
+        public string CreatedAt { get; set; } = string.Empty;
 
         [JsonPropertyName("message_count")]
         public int MessageCount { get; set; }
