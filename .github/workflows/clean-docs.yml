@@ -1,0 +1,22 @@
+name: Clean Docs Directory
+
+on:
+  workflow_dispatch:
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          persist-credentials: true
+
+      - name: Remove docs directory
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git rm -rf docs
+          git commit -m "清理docs目录，避免与GitHub Pages冲突"
+          git push
