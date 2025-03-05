@@ -1,9 +1,9 @@
 {
   "mainAssemblyName": "BlazorGeminiChat",
   "resources": {
-    "hash": "sha256-+p+E1kMkwN1WbyQGL7OYzQtNvwMfZ6iKn3AejPIxjGI=",
+    "hash": "sha256-IwtSu6a9zXizU3tjfAypJ5ElSuW5MJ6mE2l3VwXBsOY=",
     "fingerprinting": {
-      "BlazorGeminiChat.iil203si56.wasm": "BlazorGeminiChat.wasm",
+      "BlazorGeminiChat.p0mlqbaal5.wasm": "BlazorGeminiChat.wasm",
       "Microsoft.AspNetCore.Components.dcgcic0jt3.wasm": "Microsoft.AspNetCore.Components.wasm",
       "Microsoft.AspNetCore.Components.Web.vovgvyf50q.wasm": "Microsoft.AspNetCore.Components.Web.wasm",
       "Microsoft.AspNetCore.Components.WebAssembly.tfakv5635u.wasm": "Microsoft.AspNetCore.Components.WebAssembly.wasm",
@@ -71,7 +71,7 @@
       "System.Runtime.InteropServices.JavaScript.f4ln4hfftw.wasm": "sha256-r+LQmgoVdHgFKWJvUNAR7HQZAtSw+xvBIQ6siSPsBNM="
     },
     "assembly": {
-      "BlazorGeminiChat.iil203si56.wasm": "sha256-agU19Qa7M4FP7NXCMRBfrZCIkNAJvVxL48yYysuJA3o=",
+      "BlazorGeminiChat.p0mlqbaal5.wasm": "sha256-RxdjIqLfJh2VEAGB+vxzsuyt8N1xz47+FPJEfBjZV4Y=",
       "Microsoft.AspNetCore.Components.dcgcic0jt3.wasm": "sha256-vZ9NQC819ppxsQnAdVO7j1Fjg83XyVRBMevB4TEe5Eg=",
       "Microsoft.AspNetCore.Components.Web.vovgvyf50q.wasm": "sha256-b3sxM+2MSXcZuPxBOy9KiOJUeIhlGSOuBEqOeLGxu6A=",
       "Microsoft.AspNetCore.Components.WebAssembly.tfakv5635u.wasm": "sha256-J7tfwqs+F3jL6Py2avaqFVwE9KZeAv0KEbuCH6Q3bw0=",
