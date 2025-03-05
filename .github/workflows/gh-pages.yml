@@ -9,11 +9,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # 确保有写入仓库内容的权限
+      contents: write
     steps:
       - uses: actions/checkout@v3
         with:
-          persist-credentials: true  # 确保获取有效凭证
+          persist-credentials: true
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
@@ -37,11 +37,28 @@ jobs:
         
       - name: Add 404.html
         run: cp publish/wwwroot/index.html publish/wwwroot/404.html
-
-      # 新增步骤：确保所有文件都存在
+        
       - name: List files
         run: ls -la publish/wwwroot
         
+      # 复制到docs目录
+      - name: Copy to docs directory
+        run: |
+          rm -rf docs
+          mkdir -p docs
+          cp -r publish/wwwroot/* docs/
+          cp publish/wwwroot/.nojekyll docs/
+          
+      # 提交docs目录内容
+      - name: Commit docs
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add docs
+          git commit -m "Update docs directory for GitHub Pages" || echo "No changes to commit"
+          git push
+          
+      # 部署到gh-pages分支
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
@@ -49,14 +66,3 @@ jobs:
           folder: publish/wwwroot
           clean: true
           token: ${{ secrets.GITHUB_TOKEN }}
-          
-      # 新增步骤：手动推送空提交以触发GitHub Pages
-      - name: Force GitHub Pages update
-        run: |
-          git config --global user.name 'GitHub Actions'
-          git config --global user.email 'actions@github.com'
-          git checkout gh-pages
-          touch trigger.txt
-          git add trigger.txt
-          git commit -m "Trigger GitHub Pages rebuild"
-          git push
