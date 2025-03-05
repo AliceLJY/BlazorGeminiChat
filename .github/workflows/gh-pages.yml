@@ -37,6 +37,10 @@ jobs:
         
       - name: Add 404.html
         run: cp publish/wwwroot/index.html publish/wwwroot/404.html
+
+      # 新增步骤：确保所有文件都存在
+      - name: List files
+        run: ls -la publish/wwwroot
         
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
@@ -44,4 +48,15 @@ jobs:
           branch: gh-pages
           folder: publish/wwwroot
           clean: true
-          token: ${{ secrets.GITHUB_TOKEN }}  # 添加令牌
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      # 新增步骤：手动推送空提交以触发GitHub Pages
+      - name: Force GitHub Pages update
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+          git checkout gh-pages
+          touch trigger.txt
+          git add trigger.txt
+          git commit -m "Trigger GitHub Pages rebuild"
+          git push
