@@ -8,8 +8,12 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # 确保有写入仓库内容的权限
     steps:
       - uses: actions/checkout@v3
+        with:
+          persist-credentials: true  # 确保获取有效凭证
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
@@ -40,3 +44,4 @@ jobs:
           branch: gh-pages
           folder: publish/wwwroot
           clean: true
+          token: ${{ secrets.GITHUB_TOKEN }}  # 添加令牌
