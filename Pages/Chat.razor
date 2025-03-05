@@ -1,0 +1,266 @@
+@page "/chat"
+@page "/"
+@using BlazorGeminiChat.Services
+@inject ChatService ChatService
+@inject IJSRuntime JSRuntime
+
+<div class="chat-container">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Gemini AI 聊天</h5>
+            @if (!string.IsNullOrEmpty(CurrentSessionId))
+            {
+                <span class="badge bg-secondary">ID: @CurrentSessionId</span>
+            }
+        </div>
+        <div class="card-body chat-body" id="messageContainer">
+            @if (Messages.Any())
+            {
+                @foreach (var message in Messages)
+                {
+                    <div class="d-flex @(message.Role == "user" ? "justify-content-end" : "")">
+                        <div class="message @(message.Role == "user" ? "user-message" : "bot-message")">
+                            <div>@((MarkupString)FormatMessage(message.Content))</div>
+                            <div class="message-time">
+                                @FormatTimestamp(message.Timestamp)
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-center text-muted">开始新的对话吧！</p>
+            }
+        </div>
+        <div class="card-footer">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="输入您的问题..."
+                    @bind="UserInput" @bind:event="oninput" @onkeypress="HandleKeyPress" disabled="@IsLoading" />
+                <button class="btn btn-primary" @onclick="SendMessage" disabled="@(IsLoading || string.IsNullOrWhiteSpace(UserInput))">
+                    @if (IsLoading)
+                    {
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span>处理中...</span>
+                    }
+                    else
+                    {
+                        <span>发送</span>
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <button class="btn btn-outline-primary" @onclick="LoadSessions">查看所有会话</button>
+        <button class="btn btn-outline-success" @onclick="StartNewSession">开始新会话</button>
+    </div>
+
+    @if (ShowSessionsList)
+    {
+        <div class="mt-3">
+            <h5>可用会话</h5>
+            @if (Sessions.Any())
+            {
+                <div class="row">
+                    @foreach (var session in Sessions)
+                    {
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card session-card" @onclick="() => LoadSession(session.SessionId)">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted">ID: @session.SessionId</h6>
+                                    <p class="card-text">
+                                        <small>创建时间: @session.CreatedAt</small><br />
+                                        <small>消息数量: @session.MessageCount</small>
+                                    </p>
+                                    @if(!string.IsNullOrEmpty(session.LastMessage))
+                                    {
+                                        <p class="card-text text-truncate">
+                                            <small class="text-muted">最后消息: @session.LastMessage</small>
+                                        </p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p>没有可用的会话。</p>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private string UserInput { get; set; } = string.Empty;
+    private List<ChatMessage> Messages { get; set; } = new List<ChatMessage>();
+    private List<SessionInfo> Sessions { get; set; } = new List<SessionInfo>();
+    private bool IsLoading { get; set; }
+    private bool ShowSessionsList { get; set; }
+    private string CurrentSessionId => ChatService.GetCurrentSessionId();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // 如果有会话ID存储在localStorage中，尝试加载它
+        var sessionId = await GetSessionIdFromStorage();
+        if (!string.IsNullOrEmpty(sessionId))
+        {
+            try
+            {
+                var result = await ChatService.LoadSessionAsync(sessionId);
+                Messages = result.Messages;
+                await ScrollToBottom();
+            }
+            catch
+            {
+                // 如果加载失败，可能是会话已过期，忽略错误
+            }
+        }
+    }
+
+    private async Task SendMessage()
+    {
+        if (string.IsNullOrWhiteSpace(UserInput) || IsLoading)
+            return;
+
+        IsLoading = true;
+        try
+        {
+            var userMessage = UserInput;
+            UserInput = string.Empty;
+            
+            var response = await ChatService.SendMessageAsync(userMessage);
+            Messages = response.Messages;
+            
+            // 保存会话ID到localStorage
+            await SaveSessionIdToStorage(response.SessionId);
+            
+            await ScrollToBottom();
+        }
+        catch (Exception ex)
+        {
+            // 显示错误消息
+            Messages.Add(new ChatMessage 
+            {
+                Role = "model",
+                Content = $"发生错误: {ex.Message}",
+                Timestamp = DateTime.Now.ToString("o")
+            });
+        }
+        finally
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(UserInput) && !IsLoading)
+        {
+            await SendMessage();
+        }
+    }
+
+    private async Task LoadSessions()
+    {
+        ShowSessionsList = true;
+        Sessions = await ChatService.GetSessionsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadSession(string sessionId)
+    {
+        IsLoading = true;
+        try
+        {
+            var result = await ChatService.LoadSessionAsync(sessionId);
+            Messages = result.Messages;
+            ShowSessionsList = false;
+            await SaveSessionIdToStorage(sessionId);
+            await ScrollToBottom();
+        }
+        catch (Exception ex)
+        {
+            Messages.Add(new ChatMessage 
+            {
+                Role = "model",
+                Content = $"加载会话失败: {ex.Message}",
+                Timestamp = DateTime.Now.ToString("o")
+            });
+        }
+        finally
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task StartNewSession()
+    {
+        IsLoading = true;
+        try
+        {
+            // 发送空消息来创建新会话
+            var response = await ChatService.SendMessageAsync("你好", null);
+            Messages = response.Messages;
+            ShowSessionsList = false;
+            await SaveSessionIdToStorage(response.SessionId);
+        }
+        catch (Exception ex)
+        {
+            Messages.Add(new ChatMessage 
+            {
+                Role = "model",
+                Content = $"创建新会话失败: {ex.Message}",
+                Timestamp = DateTime.Now.ToString("o")
+            });
+        }
+        finally
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ScrollToBottom()
+    {
+        await Task.Delay(50); // 给UI渲染一点时间
+        await JSRuntime.InvokeVoidAsync("scrollToBottom", "messageContainer");
+    }
+
+    private string FormatMessage(string content)
+    {
+        if (string.IsNullOrEmpty(content))
+            return string.Empty;
+
+        // 将换行符转换为<br>标签
+        return content.Replace("\n", "<br>");
+    }
+
+    private string FormatTimestamp(string timestamp)
+    {
+        if (string.IsNullOrEmpty(timestamp))
+            return string.Empty;
+
+        if (DateTime.TryParse(timestamp, out var date))
+        {
+            return date.ToString("yyyy-MM-dd HH:mm:ss");
+        }
+
+        return timestamp;
+    }
+
+    private async Task<string> GetSessionIdFromStorage()
+    {
+        return await JSRuntime.InvokeAsync<string>("localStorage.getItem", "currentSessionId");
+    }
+
+    private async Task SaveSessionIdToStorage(string sessionId)
+    {
+        await JSRuntime.InvokeVoidAsync("localStorage.setItem", "currentSessionId", sessionId);
+    }
+}
