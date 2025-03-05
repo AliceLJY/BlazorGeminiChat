@@ -1,43 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <title>GitHub Pages Test</title>
   <meta charset="utf-8">
-  <title>GitHub Pages 测试页面</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
-      line-height: 1.6;
-      color: #333;
-    }
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      background-color: #f9f9f9;
-    }
-    h1 {
-      color: #2c3e50;
-    }
-    .success {
-      color: green;
-      font-weight: bold;
-    }
-  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>GitHub Pages 测试页面</h1>
-    <p>如果你能看到这个页面，说明 GitHub Pages 基本功能正常工作。</p>
-    <p class="success">✓ 测试成功!</p>
-    <p>创建时间: <span id="timestamp"></span></p>
-    <p>主项目链接: <a href="index.html">返回主页</a></p>
-  </div>
-
+  <h1>GitHub Pages Test Page</h1>
+  <p>如果你能看到这个页面，说明GitHub Pages配置正常。</p>
+  <p>当前时间: <span id="time"></span></p>
+  
   <script>
-    document.getElementById('timestamp').textContent = new Date().toLocaleString();
+    document.getElementById("time").innerHTML = new Date().toString();
   </script>
 </body>
 </html>
