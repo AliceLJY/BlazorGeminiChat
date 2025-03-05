@@ -43,7 +43,7 @@ jobs:
         
       - name: List files
         run: ls -la publish/wwwroot
-          
+        
       # 部署到gh-pages分支
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
