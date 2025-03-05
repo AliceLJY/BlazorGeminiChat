@@ -1,0 +1,48 @@
+/* Chat container styles */
+.chat-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.chat-body {
+    height: 60vh;
+    overflow-y: auto;
+    padding: 15px;
+}
+
+/* Message styles */
+.message {
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    border-radius: 10px;
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+.user-message {
+    background-color: #dcf8c6;
+    margin-left: auto;
+    text-align: right;
+}
+
+.bot-message {
+    background-color: #f1f0f0;
+}
+
+.message-time {
+    font-size: 0.7rem;
+    color: #777;
+    margin-top: 5px;
+}
+
+/* Session card styles */
+.session-card {
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.session-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
