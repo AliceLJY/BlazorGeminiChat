@@ -1,3 +1,5 @@
+> **[Archived]** This repository is no longer maintained and is kept for history only.
+
 # BlazorGeminiChat
 
 基于Blazor WebAssembly构建的Gemini AI聊天应用。
