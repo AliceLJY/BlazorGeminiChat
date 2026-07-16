@@ -1,4 +1,5 @@
-> **[Archived]** This repository is no longer maintained and is kept for history only.
+> **2025 年历史演示。** 静态页面仍可能通过 GitHub Pages 打开，但 2026-07-17
+> 审计时已无法与原 Goorm 后端建立 TLS 连接，因此聊天功能不能视为可用；部署流程也已冻结。
 
 # BlazorGeminiChat
 
@@ -46,7 +47,7 @@
 
 ## 部署
 
-项目配置为使用GitHub Actions自动部署到GitHub Pages。当推送到main分支时，会自动构建和部署应用。
+最后一个版本曾配置 GitHub Actions 自动部署到 GitHub Pages；仓库归档后不再维护这条部署链。
 
 ### 手动部署
 
@@ -60,4 +61,5 @@ dotnet publish -c Release
 
 ## 后端API
 
-应用使用位于 `https://gmbot.run-us-west2.goorm.site` 的后端API服务。如需修改API地址，请编辑 `Program.cs` 文件中的 `BaseAddress` 设置。
+最后一个版本使用 `https://gmbot.run-us-west2.goorm.site` 作为后端 API。2026-07-17
+审计时该地址无法建立 TLS 连接；这里保留地址只为解释历史架构，不代表服务仍在线。
